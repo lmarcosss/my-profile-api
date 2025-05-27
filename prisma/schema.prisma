@@ -25,6 +25,11 @@ model Article {
   author    User     @relation(fields: [authorId], references: [id])
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
   id        String    @id @default(uuid())
   name      String
@@ -32,5 +37,6 @@ model User {
   password  String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  role      Role      @default(USER)
   Article   Article[]
 }

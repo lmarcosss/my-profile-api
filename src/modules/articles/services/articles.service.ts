@@ -2,12 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { ArticlesNotFoundException } from "@/modules/articles/exceptions/articles-not-found.exception";
 import { PrismaService } from "@/infra/database/prisma/prisma.service";
+import { ArticleRequestUpdateDto } from "../dtos/article-request-update.dto";
 
 @Injectable()
 export class ArticlesService {
   constructor(private prisma: PrismaService) {}
 
-  create(data: Prisma.ArticleCreateInput) {
+  create(data: Prisma.ArticleUncheckedCreateInput) {
     return this.prisma.article.create({ data });
   }
 
@@ -27,7 +28,7 @@ export class ArticlesService {
     return existingArticle;
   }
 
-  async update(id: string, data: Prisma.ArticleUpdateInput) {
+  async update(id: string, data: ArticleRequestUpdateDto) {
     const existingArticle = await this.prisma.article.findUnique({
       where: { id },
     });
