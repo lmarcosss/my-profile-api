@@ -8,17 +8,25 @@ import {
   Delete,
 } from "@nestjs/common";
 import { UsersService } from "../services/users.service";
-import { Prisma } from "@prisma/client";
+import { Public } from "@/modules/auth/decorators/public.decorator";
+import { UserRequestUpdateDto } from "../dtos/user-request-update.dto";
+import {
+  LoggedUser,
+  LoggedUserType,
+} from "@/modules/auth/decorators/logged-user.decorator";
+import { UserRequestCreateDto } from "../dtos/user-request-create.dto";
 
 @Controller("users")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Public()
   @Post()
-  create(@Body() createUserDto: Prisma.UserCreateInput) {
-    return this.usersService.create(createUserDto);
+  create(@Body() data: UserRequestCreateDto) {
+    return this.usersService.create(data);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.usersService.findAll();
@@ -30,12 +38,16 @@ export class UsersController {
   }
 
   @Patch(":id")
-  update(@Param("id") id: string, @Body() data: Prisma.UserUpdateInput) {
+  update(@Param("id") id: string, @Body() data: UserRequestUpdateDto) {
     return this.usersService.update(id, data);
   }
 
   @Delete(":id")
-  remove(@Param("id") id: string) {
+  remove(@Param("id") id: string, @LoggedUser() user: LoggedUserType) {
+    if (!user.isAdmin) {
+      throw new Error("Only admins can delete users.");
+    }
+
     return this.usersService.remove(id);
   }
 }
