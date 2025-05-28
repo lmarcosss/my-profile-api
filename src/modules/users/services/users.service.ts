@@ -76,7 +76,7 @@ export class UsersService implements OnModuleInit {
     return userFinded;
   }
 
-  async findOne(id: string) {
+  async findOneById(id: string) {
     const userFinded = await this.prisma.user.findUnique({
       where: { id },
     });
@@ -93,13 +93,7 @@ export class UsersService implements OnModuleInit {
   }
 
   async update(id: string, data: UserRequestUpdateDto) {
-    const userFinded = await this.prisma.user.findUnique({
-      where: { id },
-    });
-
-    if (!userFinded) {
-      throw new UsersNotFoundException();
-    }
+    await this.findOneById(id);
 
     return this.prisma.user.update({
       where: { id },
@@ -108,13 +102,7 @@ export class UsersService implements OnModuleInit {
   }
 
   async remove(id: string) {
-    const userFinded = await this.prisma.user.findUnique({
-      where: { id },
-    });
-
-    if (!userFinded) {
-      throw new UsersNotFoundException();
-    }
+    await this.findOneById(id);
 
     return this.prisma.user.delete({
       where: { id },
