@@ -28,8 +28,6 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 
-# Copia os scripts, se precisar rodar algo manual
-COPY --from=builder /app/.env .env
 
 # Executa migrations ao subir
 RUN npx prisma generate
@@ -37,4 +35,4 @@ RUN npx prisma migrate deploy
 
 EXPOSE 3000
 
-CMD ["yarn", "start:prod"]
+CMD ["node", "dist/main"]
