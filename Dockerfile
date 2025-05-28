@@ -10,15 +10,20 @@ COPY . .
 
 RUN yarn build
 
+# Etapa final com Alpine
 FROM node:20-alpine AS runner
 
 WORKDIR /app
 
 ENV NODE_ENV=production
 
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
+# Copia só o necessário
 COPY --from=builder /app/package.json ./
+COPY --from=builder /app/yarn.lock ./
+COPY --from=builder /app/dist ./dist
+
+# Reinstala dependências de produção no ambiente Alpine
+RUN yarn install --frozen-lockfile --production
 
 EXPOSE 3000
 
